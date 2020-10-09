@@ -1,0 +1,26 @@
+{
+  "name": "node-mongo-admin",
+  "version": "1.0.0",
+  "description": "Node JS API for Node-MongoDb-Admin application",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.0",
+    "sqlite3": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
+  },
+  "keywords": [
+    "API",
+    "NodeJS",
+    "MongoDB"
+  ],
+  "author": "Gilbert Rehling",
+  "license": "GPL-3.0-or-later"
+}
