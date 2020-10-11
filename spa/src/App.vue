@@ -5,8 +5,11 @@
 </template>
 
 <script>
+    import router from './router'
+
     export default {
         name: 'App',
+
         metaInfo: {
             title: 'Node Mongo Admin',
             titleTemplate: '%s | Node Mongo Admin',
@@ -16,6 +19,33 @@
                 { name: 'viewport', content: 'width=device-width, initial-scale=1' },
             ],
         },
+
+        methods: {
+            handleCheckSetup() {
+                let status = this.$store.getters.getSetupStatus;
+                if (status === 1) {
+                    setTimeout(() => {
+                        this.handleCheckSetup();
+                    }, 250);
+                }
+                if (status === 2) {
+                    let checked = this.$store.getters.getSetup;
+                    if (checked === false) {
+                        console.log("load setup...");
+                        router.push('setup');
+                    }
+                }
+                if (status === 3) {
+                    console.log("load setup...");
+                    router.push('setup');
+                }
+            }
+        },
+
+        mounted() {
+            this.$store.dispatch('checkSetup');
+            this.handleCheckSetup();
+        }
     }
 </script>
 

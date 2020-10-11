@@ -31,17 +31,17 @@ switch ( process.env.NODE_ENV )  {
     case 'development':
     case 'dev':
     case 'local':
-        api_url = './api/v1';
-        web_url = './';
+        api_url = '//192.168.1.141:8080/api';
+        web_url = '//192.168.1.141:8080/';
         break;
 
     case 'staging':
-        api_url = '//staging.phpmongoadmin.com/api/v1';
+        api_url = '//staging.phpmongoadmin.com/api';
         web_url = '//staging.phpmongoadmin.com';
         break;
 
     case 'demo':
-        api_url = '//demo.phpmongoadmin.com/api/v1';
+        api_url = '//demo.phpmongoadmin.com/api';
         web_url = '//demo.phpmongoadmin.com';
         break;
 

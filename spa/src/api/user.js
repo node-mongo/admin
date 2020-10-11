@@ -21,21 +21,39 @@
 import { MONGO_CONFIG } from '../config.js';
 
 import Vue from 'vue';
-const axios = Vue.prototype.$http;
 
 export default {
+    /*
+    *  POST  /api/v1/user/login - login a user
+    */
+    loginUser: ( user, password ) => {
+        return Vue.prototype.$http.post( MONGO_CONFIG.API_URL + '/login',
+            {
+                user: user,
+                password: password,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   GET /api/v2/user/logout/{uid}  - logs out the user
+    */
+    logoutUser: () => {
+        return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/logout/')
+    },
+
     /*
     *  GET   /api/v1/user - get the current authenticated user
     */
     getUser: () => {
-        return axios.get( MONGO_CONFIG.API_URL + '/user' );
+        return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users' );
     },
 
     /*
     *  PUT  /api/v1/user - create or update a user
     */
     putUpdateUser: ( name, email, password ) => {
-        return axios.put( MONGO_CONFIG.API_URL + '/user',
+        return Vue.prototype.$http.put( MONGO_CONFIG.API_URL + '/users',
             {
                 name: name,
                 email: email,
@@ -47,7 +65,7 @@ export default {
     *  POST  /api/v1/user - register a new user
     */
     postUser: ( name, email, password ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/user',
+        return Vue.prototype.$http.post( MONGO_CONFIG.API_URL + '/users',
             {
                 name: name,
                 email: email,
@@ -57,49 +75,41 @@ export default {
     },
 
     /*
-    *  POST  /api/v1/user/login - login a user
-    */
-    loginUser: ( user, password ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/user/login',
-            {
-                user: user,
-                password: password,
-                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
-            });
-    },
-
-    /*
-    *   GET /api/v2/user/logout/{uid}  - logs out the user
-    */
-    logoutUser: ( uid ) => {
-        return axios.get( MONGO_CONFIG.API_URL + '/user/logout/' + uid);
-    },
-
-    /*
     *   GET  /api/v1/user/fetch/{uid} - get the current authenticated user
     */
     fetchUser: ( uid ) => {
-        return axios.get( MONGO_CONFIG.API_URL + '/user/fetch/' + uid );
+        return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users/' + uid );
     },
 
     /*
     *   GET /api/v1/user/email/{email} - Check | verify an email address
     */
     checkEmail: ( email ) => {
-        return axios.get( MONGO_CONFIG.API_URL + '/user/email/' + email );
+        return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users/email/' + email );
     },
 
     /*
     *   GET /api/v1/user/location - Get the users location from IpInfo
     */
     getUserLocation: () => {
-        return axios.get( MONGO_CONFIG.API_URL + '/user/location' );
+        return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users/location' );
     },
 
     /*
     *   GET /api/v1/user/states/{country} - Get the users states based on country code
     */
     getUserStates: (country) => {
-        return axios.get( MONGO_CONFIG.API_URL + '/user/states/' + country);
+        return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/user/states/' + country);
     },
+
+    createControlUser: (data) => {
+        return Vue.prototype.$http.post( MONGO_CONFIG.API_URL + '/setup',
+            {
+                country: data.country,
+                name: data.name,
+                user: data.user,
+                email: data.email,
+                password: data.password
+            });
+    }
 }

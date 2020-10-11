@@ -50,6 +50,9 @@ export const application = {
         countries: {},
         states: [],
         suburb: '',
+        setup: false,
+        setupStatus: 0,
+        controlUserStatus: 0,
         postcode: '',
         activeNav: null
     },
@@ -65,15 +68,15 @@ export const application = {
 
             // this block simply ensures we are trying to load an existing language
             if (state.languages.find(language => language === data)) {
-                console.log("language GTG!");
                 commit( 'setLanguage', data);
                 localStorage.setItem( 'language', JSON.stringify(data) );
                 commit( 'setLanguageArray' );
                 commit( 'setLanguageStatus', 2);
+                console.log("language GTG!");
 
             } else {
-                console.log("language not found in array!!");
                 commit( 'setLanguageStatus', 3);
+                console.log("language not found in array!!");
             }
         },
 
@@ -94,6 +97,42 @@ export const application = {
             commit( 'setLanguageStatus', 0);
             commit( 'setLanguageArray' );
             commit( 'setLanguageStatus', 2);
+        },
+
+        checkSetup( { commit }) {
+            commit( 'setSetupStatus', 1 );
+
+            UserAPI.fetchUser(0)
+                .then( ( response ) => {
+                    console.log(response);
+                    //commit( 'setSetup', response.data );
+                    commit( 'setSetup', false );
+                    commit( 'setSetupStatus', 2);
+                })
+                .catch( (error) => {
+                    commit( 'setSetup', false );
+                    commit( 'setSetupStatus', 3);
+                    console.log('check setup error: ' + error);
+                    if (error.response) {
+                        console.log('check setup error response message: ' + error.response.data.message);
+                        console.log('check setup error response status: ' + error.response.status);
+                        console.log('check setup error response headers: ' + error.response.headers);
+                    }
+                });
+        },
+
+        createControlUser({ commit }, data) {
+            commit( 'setControlUserStatus', 1 );
+
+            UserAPI.createControlUser( data )
+                .then( () => {
+                    commit( 'setControlUserStatus', 2 );
+                    commit( 'setSetup', true );
+                })
+                .catch( (error) => {
+                    commit( 'setControlUserStatus', 3 );
+                    console.log('error creating control user: ' + error);
+                });
         },
 
         /*
@@ -134,9 +173,9 @@ export const application = {
                         }
                     })
                     .catch( (error) => {
-                        console.log('error getting location: ' + error);
                         commit( 'setLocation', {} );
                         commit( 'setLocationStatus', 3 );
+                        console.log('error getting location: ' + error);
                     });
             }
         },
@@ -165,6 +204,10 @@ export const application = {
         */
         setCountryNameFromCookie( { commit }, data) {
             commit( 'setCountryName', data);
+        },
+
+        setCountryByCode( { commit }, code) {
+            commit( 'setCountryByCode', code);
         },
 
         /*
@@ -227,6 +270,18 @@ export const application = {
             state.languageArray = data;
         },
 
+        setSetupStatus( state, status ) {
+            state.setupStatus = status;
+        },
+
+        setSetup( state, value ) {
+            state.setup = value;
+        },
+
+        setControlUserStatus( state, status ) {
+            state.controlUserStatus = status;
+        },
+
         setLocationStatus( state, status ) {
             state.locationStatus = status;
         },
@@ -253,6 +308,21 @@ export const application = {
 
         setCountries( state, countries ) {
             state.countries = countries;
+        },
+
+        setCountryByCode( state, code ) {
+            console.log("code: " + code);
+            let countries = state.countries;
+            let country;
+            countries.map((c) => {
+                if (c.code === code) {
+                    console.log("matched code..");
+                    country = c;
+                }
+            });
+            console.log("country: " + country);
+            state.country = country.code;
+            state.countryName = country.name;
         },
 
         setStates( state, states ) {
@@ -322,6 +392,18 @@ export const application = {
 
         getLocationStatus( state ) {
             return state.locationStatus;
+        },
+
+        getSetupStatus( state ) {
+            return state.setupStatus;
+        },
+
+        getSetup( state ) {
+            return state.setup;
+        },
+
+        getControlUserStatus( state ) {
+            return state.controlUserStatus;
         },
 
         getLocation( state) {

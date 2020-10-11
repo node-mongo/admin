@@ -23,7 +23,7 @@ const options = {
 // this method can be looped until it connects
 const connectWithRetry = () => {
     console.log('MongoDB connection with reattempts: ' + count);
-    mongoose.connect("mongodb://localhost/email-service", options).then(() => {
+    mongoose.connect("mongodb://localhost/admin", options).then(() => {
         console.log('MongoDB connection established');
 
     }).catch(err => {

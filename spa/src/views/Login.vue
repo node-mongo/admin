@@ -44,27 +44,37 @@
 <script>
   import {EventBus} from "../event-bus";
 
-  export default {
-    /*
-    Sets up the component on the mounted lifecycle hook.
-    */
-    mounted() {
-      /*
-      When mounted display login modal.
-      */
-      setTimeout(function() {
-        EventBus.$emit('prompt-login');
-      },100);
-    },
+  import router from '../router';
 
+  export default {
     methods: {
       /*
-      * Calls the Translation and Language service
-      */
+       * Calls the Translation and Language service
+       */
       showLanguage( context, key ) {
-        //return this.$trans( context, key );
         return this.$store.getters.getLanguageString( context, key );
+      },
+
+      setAction() {
+          let self = this;
+          setTimeout(function() {
+              if (self.$store.getters.getSetup === false) {
+                  router.push('setup');
+              } else {
+                  EventBus.$emit('prompt-login');
+              }
+          },100);
       }
-    }
+    },
+
+      /*
+     * Sets up the component on the mounted lifecycle hook.
+     */
+      mounted() {
+          /*
+           * When mounted et the required actions.
+           */
+          this.setAction();
+      },
   }
 </script>

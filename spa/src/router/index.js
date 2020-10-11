@@ -1,9 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 //import Home from '../views/Home.vue'
-//import store from "../store"
-
-let me = 1;
+import store from "../store"
 
 Vue.use(VueRouter);
 
@@ -12,7 +10,9 @@ const routes = [
     path: "/",
     name: "layout",
     redirect: { name: "admin" },
-    component: Vue.component( "Layout", require( "../layouts/Layout.vue" ).default ),
+    component: () => import(
+        '../layouts/Layout.vue'
+    ),
     meta: {
       requiresAuth: true
     },
@@ -20,19 +20,22 @@ const routes = [
       {
         path: "admin",
         name: "admin",
-        component: Vue.component( "Admin", require( "../views/Admin.vue").default )
+        component: ()=> import(
+            /* webpackChunkName: "admin" */ '../views/Admin.vue'
+        )
       },
       {
         path: "about",
         name: "about",
-        component: Vue.component( "About", require( "../views/About.vue").default )
+        component: () => import(
+            /* webpackChunkName: "about" */ '../views/About.vue'
+        )
       }
     ]
   },
   {
     path: "/public",
     name: "public",
-    redirect: { name: "login" },
     component: () => import(
         /* webpackChunkName: "public" */  '../layouts/Public.vue'
     ),
@@ -42,6 +45,13 @@ const routes = [
         name: "login",
         component: () => import(
             /* webpackChunkName: "login" */ '../views/Login.vue'
+        )
+      },
+      {
+        path: "setup",
+        name: "setup",
+        component: () => import(
+            /* webpackChunkName: "setup" */ '../views/Setup.vue'
         )
       }
     ]
@@ -64,8 +74,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    //if (store.getters.isLoggedIn) {
-    if (me === 2) {
+    if (store.getters.isLoggedIn) {
       next();
       return;
     }

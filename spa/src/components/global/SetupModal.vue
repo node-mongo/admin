@@ -363,19 +363,6 @@
         },
 
         /*
-          Sets up the component on the mounted lifecycle hook.
-        */
-        mounted() {
-            /*
-             * When prompted for login, show the component.
-             */
-            EventBus.$on('prompt-registration', () => {
-                this.show = true;
-
-            });
-        },
-
-        /*
          *   This modules computed methods
          */
         computed: {
@@ -557,6 +544,19 @@
             registerUser( event ) {
                 event.preventDefault();
                 this.$store.dispatch( 'registerUser', { data: this.credentials } );
+            },
+
+            /*
+             Sets up the component on the mounted lifecycle hook.
+            */
+            mounted() {
+                /*
+                 * When prompted for login, show the component.
+                 */
+                EventBus.$on('prompt-registration', () => {
+                    this.show = true;
+
+                });
             }
         }
     }
