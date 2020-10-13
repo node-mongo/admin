@@ -14,18 +14,10 @@ const config = require('../config/env.config');
  *
  * @returns {boolean}
  */
-exports.checkDomain = (email) => {
-    let arr     = email.split("@");
-    let domain  = arr[1],
-        domains = config.allowedDomains,
-        // fail by default
-        found = false;
+const auth = () => {
 
-    for (const allowed of domains) {
-        if (allowed === domain) {
-            found = true;
-        }
-    }
-    // return the result
-    return found;
+};
+
+module.exports = {
+    auth
 };

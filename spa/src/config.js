@@ -19,7 +19,8 @@
 *   Define the API route we will be using
 */
 let api_url = '',
-    web_url = '';
+    web_url = '',
+    server = '';
 
 /*
 *   Set the API route during the build process
@@ -33,21 +34,25 @@ switch ( process.env.NODE_ENV )  {
     case 'local':
         api_url = '//192.168.1.141:8080/api';
         web_url = '//192.168.1.141:8080/';
+        server  = '//192.168.1.141:8080';
         break;
 
     case 'staging':
-        api_url = '//staging.phpmongoadmin.com/api';
-        web_url = '//staging.phpmongoadmin.com';
+        api_url = '//staging.nodemongoadmin.com:8080/api';
+        web_url = '//staging.nodemongoadmin.com/';
+        server  = '//staging.nodemongoadmin.com:8080';
         break;
 
     case 'demo':
-        api_url = '//demo.phpmongoadmin.com/api';
-        web_url = '//demo.phpmongoadmin.com';
+        api_url = '//demo.nodemongoadmin.com:8080/api';
+        web_url = '//demo.nodepmongoadmin.com/';
+        server  = '//demo.nodemongoadmin.com:8080';
         break;
 
     case 'production':
-        api_url = './api/v1';
-        web_url = './';
+        api_url = '/api';
+        web_url = '/';
+        server  = '';
         break;
 }
 

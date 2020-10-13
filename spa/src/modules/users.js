@@ -111,7 +111,7 @@ export const users = {
         loadUser( { commit } ) {
             commit( 'setUserLoadStatus', 1 );
 
-            UserAPI.getUser()
+            UserAPI.getUserByIri(iri)
                 .then( (response) => {
                     const user = response.data;
                     if (user.id) {

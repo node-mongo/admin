@@ -24,10 +24,10 @@ import Vue from 'vue';
 
 export default {
     /*
-    *  POST  /api/v1/user/login - login a user
+    *  POST  /api/auth/login - login a user
     */
     loginUser: ( user, password ) => {
-        return Vue.prototype.$http.post( MONGO_CONFIG.API_URL + '/login',
+        return Vue.prototype.$http.post( MONGO_CONFIG.API_URL + '/auth/login',
             {
                 user: user,
                 password: password,
@@ -36,21 +36,21 @@ export default {
     },
 
     /*
-    *   GET /api/v2/user/logout/{uid}  - logs out the user
+    *   GET /api/auth/logout  - logs out the user
     */
     logoutUser: () => {
-        return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/logout/')
+        return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/auth/logout/')
     },
 
     /*
-    *  GET   /api/v1/user - get the current authenticated user
+    *  GET   /api/v1/users - get the current authenticated user
     */
-    getUser: () => {
+    getUsers: () => {
         return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users' );
     },
 
     /*
-    *  PUT  /api/v1/user - create or update a user
+    *  PUT  /api/v1/users - create or update a user
     */
     putUpdateUser: ( name, email, password ) => {
         return Vue.prototype.$http.put( MONGO_CONFIG.API_URL + '/users',
@@ -62,7 +62,7 @@ export default {
     },
 
     /*
-    *  POST  /api/v1/user - register a new user
+    *  POST  /api/users - register a new user
     */
     postUser: ( name, email, password ) => {
         return Vue.prototype.$http.post( MONGO_CONFIG.API_URL + '/users',
@@ -75,28 +75,35 @@ export default {
     },
 
     /*
-    *   GET  /api/v1/user/fetch/{uid} - get the current authenticated user
+    *   GET  /api/users/{uid} - get the current authenticated user
     */
-    fetchUser: ( uid ) => {
+    getUser: ( uid ) => {
         return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users/' + uid );
     },
 
     /*
-    *   GET /api/v1/user/email/{email} - Check | verify an email address
+    *   GET  {iri} - get the current authenticated user
+    */
+    getUserByIri: ( iri ) => {
+        return Vue.prototype.$http.get( MONGO_CONFIG.server + iri );
+    },
+
+    /*
+    *   GET /api/users/email/{email} - Check | verify an email address
     */
     checkEmail: ( email ) => {
         return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users/email/' + email );
     },
 
     /*
-    *   GET /api/v1/user/location - Get the users location from IpInfo
+    *   GET /api/users/location - Get the users location from IpInfo
     */
     getUserLocation: () => {
         return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users/location' );
     },
 
     /*
-    *   GET /api/v1/user/states/{country} - Get the users states based on country code
+    *   GET /api/users/states/{country} - Get the users states based on country code
     */
     getUserStates: (country) => {
         return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/user/states/' + country);

@@ -2,17 +2,20 @@
  * Defines the controller for handling the emailing API route
  */
 
-// set a timestamp in seconds
-const timeStamp = Math.floor(Date.now() / 1000);
-
 // Require the logging service
-const LogService = require('../../app/services/logging.service');
+const { LogsService } = require('../../app/services');
 
-/* Requires the sqlite adapter
- * This is a one-off usage only required for the initial setup
- */
-const db = require('../../app/services/sqlite.service').db;
-
+/* Require the SqLite adapter .verbose() */
+const sqlite3 = require('sqlite3').verbose();
+const config  = require('../../app/config/env.config');
+const db = new sqlite3.Database( config.dbPath , (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    else {
+        console.log('App setup connected to the sqlite database:' + config.dbPath);
+    }
+});
 const hash = require('pbkdf2-password')();
 
 /* Define the send method */
@@ -28,36 +31,40 @@ exports.setup = (req, res) => {
         return res.status(400).send({errors: ['Required parameters missing']});
     }
 
-    let salted = null;
-    let hashed = null;
-
     hash({ password: pwd }, (err, pass, salt, hash ) => {
-       if (err) { throw err; }
-       // store the salt and hash
-        salted = salt;
-        hashed = hash
-    });
+       if (err) {
+           console.log(err);
+           throw err;
+       }
+        console.log("pass: " + pass);
+        console.log("salt: " + salt);
+        console.log("hashed: " + hash);
 
-    let sql  = `INSERT INTO users
-        (name, user, email, salt, hash, control_user, admin_user, country, active)
+        // set a timestamp in seconds
+        const ts = Math.floor(Date.now() / 1000);
+        let sql  = `INSERT INTO users
+        (name, user, email, salt, hash, control_user, admin_user, country, active, timestamp)
         VALUES
-        (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    db.run( sql, [name, user, email, salted, hashed, 1, 1, country, 1], (err) => {
-        if (err) {
-            // log this
-            let logData = {
-                "type": "setup",
-                "action": "create",
-                "message": err.message,
-                "timeStamp": timeStamp
-            };
-            LogService.saveLog(logData);
+        db.run( sql, [name, user, email, salt, hash, 1, 1, country, 1, ts], (err) => {
+            if (err) {
+                console.log("setup err: " + err);
+                // log this
+                let logData = {
+                    "type": "setup",
+                    "action": "create",
+                    "message": err.message
+                };
+                LogsService.save(logData);
 
-            // return an error response
-        //    return res.status(400).json({ message: 'create control user failed' });
-        }
+                // return an error response
+                // return res.status(400).json({ message: 'create control user failed' });
+            }
+        });
+
+        return res.json( { success: true, message: "success"} );
     });
 
-    return res.json( { success: true, message: "success"} );
+
 };

@@ -2,14 +2,11 @@
  * Defines the controller for handling the emailing API route
  */
 
-// set a timestamp in seconds
-const timeStamp = Math.floor(Date.now() / 1000);
-
 // Require the logging service
-const LogService = require('../../app/services/logging.service');
+const { LogsService } = require('../../app/services');
 
 /* Define the login method */
-exports.login = (req, res) => {
+const login = (req, res) => {
     console.log("login() called");
     let email    = req.body.email;
     let password = req.body.password;
@@ -29,10 +26,9 @@ exports.login = (req, res) => {
         let logData = {
             "type": "email",
             "action": "auth",
-            "message": "authentication failed",
-            "timeStamp": timeStamp
+            "message": "authentication failed"
         };
-        LogService.saveLog(logData);
+        LogsService.save(logData);
 
         // return an error response
         return res.status(403).send({errors: ['Invalid credentials']});
@@ -40,6 +36,11 @@ exports.login = (req, res) => {
 };
 
 /* Defined the JWT refresh method */
-exports.refresh = (req, res) => {
+const refresh = (req, res) => {
     console.log("refresh() called");
 };
+
+module.exports = {
+    login,
+    refresh
+}

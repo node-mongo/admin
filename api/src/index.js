@@ -1,56 +1,78 @@
 /**
- * Node Mongo Admin
+ * Node Mongo Admin (primary loader)
+ * index.js
  */
 
 /* Load our local config */
-const config = require('./app/config/env.config.js');
+const config = require('./app/config/env.config');
 
-/* We will use Express JS to wrap this API service */
-const express = require('express');
-const app = express();
+/* Load our App base */
+const app = require('./app');
 
-/* Require body-parser to make our JSON life easier */
-const bodyParser = require('body-parser');
+/* Load our logging service */
+const { LogsService } = require('./app/services');
 
-/* Require the cookie=parser to enable our JWT management */
-const cookieParser = require('cookie-parser');
+/* Init the server listener */
+let server = app.listen(config.port, () => {
+    LogsService.save(
+        {
+            "type": "index",
+            "action": "launch",
+            "message": "app configured for port " + config.port
+        }
+    );
+});
 
-/* Define all our our Routes here */
-const SetupRouter = require('./setup/routes.config');
-const AuthRouter = require('./authorization/routes.config');
-const UserRouter = require('./users/routes.config');
-
-/* We need to handle CORS */
-app.use(function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
-    res.header('Access-Control-Expose-Headers', 'Content-Length');
-    res.header('Access-Control-Allow-Headers', 'Accept, Authorization, Content-Type, X-Requested-With, Range');
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(200);
-
+/* Handling exit statuses */
+const exitHandler = () => {
+    if (server) {
+        server.close(() => {
+            LogsService.save(
+                {
+                    "type": "index",
+                    "action": "closed",
+                    "message": "server closed"
+                }
+            );
+            process.exit(1);
+        });
     } else {
-        return next();
+        process.exit(1);
+    }
+};
+
+/* Handling unexpected errors */
+const unexpectedErrorHandler = (error) => {
+    LogsService.save(
+        {
+            "type": "index",
+            "action": "error",
+            "message": error
+        }
+    );
+    exitHandler();
+};
+
+/* Catch process errors */
+process.on('uncaughtException', unexpectedErrorHandler);
+process.on('unhandledRejection', unexpectedErrorHandler);
+
+/* Catch Sigterms */
+process.on('SIGTERM', () => {
+    LogsService.save(
+        {
+            "type": "index",
+            "action": "SIGTERM",
+            "message": "SIGTERM received"
+        }
+    );
+    if (server) {
+        server.close();
     }
 });
 
-/* Initialise the body-parser */
-app.use(bodyParser.json());
-
-/* Initialise the cookie-parser */
-app.use(cookieParser());
-
-/* Initialise all of our Routes here */
-SetupRouter.routesConfig(app);
-AuthRouter.routesConfig(app);
-UserRouter.routesConfig(app);
-
 /* Simple test case to ensure the app is up and running */
 app.get("/", (req, res) => res.send('Hello Gilly!'));
-
-/* Init the server listener */
-app.listen(config.port, () => console.log(`app configured for port ${config.port}`));
 
 /* testing raw node */
 //let http = require('http');

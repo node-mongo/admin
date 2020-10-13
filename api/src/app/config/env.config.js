@@ -5,6 +5,7 @@
 
 /* Update this according to the environment and URL served */
 module.exports = {
+    "dbPath": "./storage/sqlite/sqlite.db",
     "port": 8080,
     "appEndpoint": "http://192.168.1.140:8000",
     "apiEndpoint": "http://192.168.1.140:8000",

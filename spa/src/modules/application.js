@@ -102,22 +102,23 @@ export const application = {
         checkSetup( { commit }) {
             commit( 'setSetupStatus', 1 );
 
-            UserAPI.fetchUser(0)
-                .then( ( response ) => {
-                    console.log(response);
-                    //commit( 'setSetup', response.data );
-                    commit( 'setSetup', false );
+            UserAPI.getUser(0)
+                .then( (response) => {
+                    commit( 'setSetup', true );
                     commit( 'setSetupStatus', 2);
+                    console.log(response.status);
+                    console.log(response.data.message);
                 })
                 .catch( (error) => {
                     commit( 'setSetup', false );
                     commit( 'setSetupStatus', 3);
                     console.log('check setup error: ' + error);
-                    if (error.response) {
+                    /*if (error.response) {
                         console.log('check setup error response message: ' + error.response.data.message);
+                        console.log('check setup error response data.errors: ' + error.response.data.errors[0]);
                         console.log('check setup error response status: ' + error.response.status);
                         console.log('check setup error response headers: ' + error.response.headers);
-                    }
+                    }*/
                 });
         },
 

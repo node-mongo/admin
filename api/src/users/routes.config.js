@@ -6,16 +6,16 @@
 const UserController = require('./controllers/user.controller');
 
 /* Load the setup check*/
-const VerifySetup = require('../app/middleware/verify.setup.middleware');
+const VerifySetup = require('../app/middleware/verifySetup');
 
 /* Load the basic auth middleware */
-const AuthValidationMiddleware = require('../app/middleware/auth.validation.middleware');
+const Auth = require('../app/middleware/auth');
 
 /* User GET routes */
 exports.routesConfig = (app) => {
    app.get('/api/users/:id', [
        VerifySetup.checkSetup,
-       AuthValidationMiddleware.validateSession,
+       Auth.validateSession,
        UserController.findUser
    ]);
 };

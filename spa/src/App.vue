@@ -31,12 +31,14 @@
                 if (status === 2) {
                     let checked = this.$store.getters.getSetup;
                     if (checked === false) {
-                        console.log("load setup...");
+                        console.log("status 2: load setup...");
                         router.push('setup');
+                    } else {
+                        router.push('login');
                     }
                 }
                 if (status === 3) {
-                    console.log("load setup...");
+                    console.log("status 3: load setup...");
                     router.push('setup');
                 }
             }
