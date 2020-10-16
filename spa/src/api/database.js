@@ -21,31 +21,30 @@
 import { MONGO_CONFIG } from "../config";
 
 import Vue from 'vue';
-const axios = Vue.prototype.$http;
 
 export default {
     /*
     *   Get all databases
-    *   GET /api/v1/databases
+    *   GET /api/databases
     */
     getDatabases: () => {
-        return axios.get( MONGO_CONFIG.API_URL + '/databases' );
+        return  Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/databases' );
     },
 
     /*
     *   Get a single database
-    *   GET /api/vi/database/{name}
+    *   GET /api/databases/{name}
     */
     getDatabase: ( name ) => {
-        return axios.get( MONGO_CONFIG.API_URL + '/databases/' + name );
+        return  Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/databases/' + name );
     },
 
     /*
     *   Create a new Database
-    *   POST  /api/v1/database/create
+    *   POST  /api/databases/create
     */
     createDatabase: ( name) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/databases/create',
+        return  Vue.prototype.$http.post( MONGO_CONFIG.API_URL + '/databases/create',
             {
                 database: name,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
@@ -54,10 +53,10 @@ export default {
 
     /*
     *   Delete one or more Database(s)
-    *   POST  /api/v1/database/delete
+    *   POST  /api/databases/delete
     */
     deleteDatabase: ( names) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/databases/delete',
+        return  Vue.prototype.$http.post( MONGO_CONFIG.API_URL + '/databases/delete',
             {
                 names: names,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
@@ -66,10 +65,10 @@ export default {
 
     /*
     *   Run a command against a database
-    *   POST  /api/v1/database/{database}/command
+    *   POST  /api/databases/{database}/command
     */
     databaseCommand: ( data ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/command',
+        return  Vue.prototype.$http.post( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/command',
             {
                 database: data.database,
                 params: data.params,

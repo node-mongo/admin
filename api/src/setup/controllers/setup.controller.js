@@ -18,8 +18,13 @@ const db = new sqlite3.Database( config.dbPath , (err) => {
 });
 const hash = require('pbkdf2-password')();
 
-/* Define the send method */
-exports.setup = (req, res) => {
+/**
+ *
+ * @param   {object}    req
+ * @param   {object}    res
+ * @returns {*}
+ */
+const setup = (req, res) => {
     let country = req.body.country;
     let name    = req.body.name;
     let user    = req.body.user;
@@ -28,14 +33,17 @@ exports.setup = (req, res) => {
 
     // ensure that all elements exist !! basic test only !!
     if (!(name && user && email && pwd)) {
-        return res.status(400).send({errors: ['Required parameters missing']});
+        return res.status(400).json({errors: ['Required parameters missing']});
     }
 
+    /**
+     * Wrap the setup process inside the hash() methods promised results
+     */
     hash({ password: pwd }, (err, pass, salt, hash ) => {
-       if (err) {
+        if (err) {
            console.log(err);
            throw err;
-       }
+        }
         console.log("pass: " + pass);
         console.log("salt: " + salt);
         console.log("hashed: " + hash);
@@ -65,6 +73,35 @@ exports.setup = (req, res) => {
 
         return res.json( { success: true, message: "success"} );
     });
+};
 
+/**
+ *
+ * @param   {Object}    req
+ * @param   {Object}    res
+ * @returns {*}
+ */
+const check = (req, res) => {
+    if (req.session.user) {
+        let iri = "/api/users/" + req.session.user.id;
+        return res.json({
+            success: true,
+            message: "success",
+            "iri": iri,
+            setup: req.session.setup
+        });
+    }
+    else {
+     //   req.session.anonymous = new Date().getMilliseconds();
+        return res.json({
+            success: true,
+            message: "success",
+            setup: req.session.setup
+        });
+    }
+};
 
+module.exports = {
+    setup,
+    check
 };

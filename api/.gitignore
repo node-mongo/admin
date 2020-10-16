@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
-storage/sqlite/*.db
+storage/sqlite/db
+storage/sessions
 
 # local env files
 .env

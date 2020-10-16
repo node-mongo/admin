@@ -16,8 +16,6 @@
   -->
 
 <style lang="scss">
-    /* @import '~@/abstracts/_variables.scss'; */
-
     div#app-layout {
         background-color: inherit;
     }

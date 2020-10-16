@@ -14,6 +14,7 @@ const { LogsService } = require('./app/services');
 
 /* Init the server listener */
 let server = app.listen(config.port, () => {
+    console.log("app configured for port " + config.port);
     LogsService.save(
         {
             "type": "index",
@@ -57,7 +58,7 @@ const unexpectedErrorHandler = (error) => {
 process.on('uncaughtException', unexpectedErrorHandler);
 process.on('unhandledRejection', unexpectedErrorHandler);
 
-/* Catch Sigterms */
+/* Catch SIGTERM */
 process.on('SIGTERM', () => {
     LogsService.save(
         {
@@ -71,8 +72,18 @@ process.on('SIGTERM', () => {
     }
 });
 
+
+
 /* Simple test case to ensure the app is up and running */
-app.get("/", (req, res) => res.send('Hello Gilly!'));
+app.get("/", (req, res) => {
+    if (req.session.views) {
+        req.session.views++;
+    }
+    else {
+        req.session.views = 1;
+    }
+    res.send(`Hello World Views: ${req.session.views}!`)
+});
 
 /* testing raw node */
 //let http = require('http');
@@ -80,4 +91,3 @@ app.get("/", (req, res) => res.send('Hello Gilly!'));
 //    response.writeHead(200, {"Content-Type": "text/plain"});
 //    response.write("Hello World!!");
 //    response.end();
-//}).listen(8080);

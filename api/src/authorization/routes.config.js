@@ -6,12 +6,20 @@
 const AuthController = require('./controllers/auth.controller');
 
 /* Authorization POST routes */
-exports.routesConfig = (app) => {
+const routesConfig = (app) => {
     app.post('/api/auth/login', [
-       AuthController.login
+        AuthController.login
+    ]);
+
+    app.post('/api/auth/logout', [
+        AuthController.logout
     ]);
 
     app.post('/api/auth/refresh', [
         AuthController.refresh
     ]);
+};
+
+module.exports = {
+    routesConfig
 };

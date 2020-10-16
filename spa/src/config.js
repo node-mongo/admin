@@ -20,7 +20,7 @@
 */
 let api_url = '',
     web_url = '',
-    server = '';
+    server  = '';
 
 /*
 *   Set the API route during the build process
@@ -59,6 +59,7 @@ switch ( process.env.NODE_ENV )  {
 export const MONGO_CONFIG = {
     API_URL: api_url,
     WEB_URL: web_url,
+    SERVER: server,
     SITE_NAME: 'PhpMongoAdmin',
     SITE_FULLNAME: 'PHP Mongo Admin',
     LANGUAGES: { en: 'English', zh: 'Chinese' }

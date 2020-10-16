@@ -26,6 +26,7 @@
 *   This store requires the user api
 */
 import UserAPI from '../api/user.js';
+import AppAPI from '../api/app.js';
 
 export const application = {
     /*
@@ -102,9 +103,14 @@ export const application = {
         checkSetup( { commit }) {
             commit( 'setSetupStatus', 1 );
 
-            UserAPI.getUser(0)
+            AppAPI.checkSetup()
                 .then( (response) => {
-                    commit( 'setSetup', true );
+                    if (response.data.iri) {
+                        commit( 'setSetup', { iri: response.data.iri } );
+                    }
+                    else {
+                        commit( 'setSetup', true );
+                    }
                     commit( 'setSetupStatus', 2);
                     console.log(response.status);
                     console.log(response.data.message);
@@ -125,7 +131,7 @@ export const application = {
         createControlUser({ commit }, data) {
             commit( 'setControlUserStatus', 1 );
 
-            UserAPI.createControlUser( data )
+            AppAPI.createControlUser( data )
                 .then( () => {
                     commit( 'setControlUserStatus', 2 );
                     commit( 'setSetup', true );
@@ -222,7 +228,7 @@ export const application = {
         *   Get states for the current country (limited data at the moment)
         */
         getStates( { commit }, data ) {
-            UserAPI.getUserStates( data )
+            UserAPI.getStates( data )
                 .then( ( response ) => {
                     commit( 'setStates', response.data.states );
                 })

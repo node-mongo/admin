@@ -3,16 +3,16 @@
  */
 
 /* Load the required controller */
-const ServersController = require('./controllers/servers.controller');
+const DatabasesController = require('./controllers/databases.controller');
 
 //* Load the basic auth middleware */
 const Auth = require('../app/middleware/auth');
 
-/* Servers routes */
+/* Databases routes */
 const routesConfig = (app) => {
-   app.get('/api/servers', [
+   app.get('/api/databases', [
        Auth.validateSession,
-       ServersController.get
+       DatabasesController.get
    ]);
 };
 

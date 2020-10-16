@@ -16,7 +16,6 @@
   -->
 
 <style lang="scss">
-    /* @import '~@/abstracts/_variables.scss'; */
     .main-content {
         height: 100vh;
         margin: 0;
@@ -54,12 +53,27 @@
 
 <template>
     <div id="main-page-content" class="off-canvas-content main-content" v-show="show">
+        <dbs-view></dbs-view>
+        <top-view></top-view>
         <div style="clear: both;"></div>
     </div>
 </template>
 
 <script>
+    /*
+    *   Imports components
+    */
+    import DbsView from '../components/admin/dbs/DbsView';
+    import TopView from '../components/admin/top/TopView';
+
     export default {
+        /*
+        *   Register the components to be used by the home page.
+        */
+        components: {
+            DbsView,
+            TopView
+        },
 
         data() {
             return {

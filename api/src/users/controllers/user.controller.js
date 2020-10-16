@@ -5,14 +5,14 @@
 // Require the logging service
 const { LogsService } = require('../../app/services');
 /* Use the database service for queries */
-const { AppDboService } = require('../../app/services');
+const { AppDBOService } = require('../../app/services');
 /* Get the User model */
-const { User } = require('../../app/models');
+const { UserModel } = require('../../app/models');
 /* Load our local config */
 const config = require('../../app/config/env.config');
 /* Initialise */
-const dbo = new AppDboService(config.dbPath);
-const user = new User(dbo);
+const dbo = new AppDBOService(config.dbPath);
+const User = new UserModel(dbo);
 
 /* Define the send method */
 const findUser = (req, res) => {
@@ -28,12 +28,19 @@ const findUser = (req, res) => {
         return res.status(201).json({message: "Not found"});
     }
 
-    user.findById(id)
+    User.findById(id)
         .then((user) => {
             // check that the sender's domain is authorized
             if (user) {
-                /* what do we do now?? */
-                console.log(user);
+                /* return a cut down user */
+                let u = {
+                    id: user.id,
+                    iri: "/api/users/" + user.id,
+                    user: user.user,
+                    name: user.name,
+                    country: user.country
+                };
+                return res.status(200).json({ message: "success", user: u});
 
             } else {
                 // log this
@@ -50,6 +57,11 @@ const findUser = (req, res) => {
         });
 };
 
+const location = (req, res) => {
+    return res.status(200).json({ message: "success", location: {}});
+};
+
 module.exports = {
-    findUser
+    findUser,
+    location
 };

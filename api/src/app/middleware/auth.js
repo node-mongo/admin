@@ -1,31 +1,52 @@
 /**
- * Define some middleware methods that can be used to validate incoming requests
+ * Define a rudimentary Session based AUTH middleware method that can be used to validate incoming requests
  */
 
-/* Require JWT for basic auth handling */
-const jwt = require('json-web-token'),
-    secret = require('../config/env.config.js').jwt_secret; // Todo: !! this would be an ENV config value in real life !!
+/* Use the database service for queries */
+const { AppDBOService } = require('../services');
+/* Get the User model */
+const { UserModel } = require('../models');
+/* Load our local config */
+const config = require('../config/env.config');
+/* Initialise */
+const dbo = new AppDBOService(config.dbPath);
+const User = new UserModel(dbo);
 
-/* A rudimentary method for faking some JTW validation */
-exports.validateSession =  (req, res, next) => {
-    if (req.headers['authorisation']) {
-        try {
-            let authorization = req.headers['authorization'].split(' ');
-            if (authorization[0] !== 'Bearer') {
-                // return res.status(401).send();
+/**
+ *
+ * @param   req
+ * @param   res
+ * @param   {Object}    next
+ * @returns {undefined|*|void}
+ */
+const validateSession = (req, res, next) => {
+    try {
+        // A user MUST be present in the session
+        if (req.session.user) {
+            let sessionUser = req.session.user;
+            User.findById(sessionUser.id)
+                .then((user) => {
+                    // ToDo: seems to have issues whe using strict comparison
+                    if (user && user.active == 1) {
+                        // only return TRUE if User is still active
+                        next();
+                    } else {
+                        // this is the end my friend !!
+                        return res.status(401).json({"errors": "Unauthenticated due to inactive user"});
+                    }
+                });
 
-            } else {
-                req.jwt = jwt.verify(authorization[1], secret);
-                return next();
-            }
+        } else {
+            console.error(req.session);
+            return res.status(401).json({"errors": "Unauthenticated: " + req.session});
         }
-        catch (err) {
-            // return res.status(403).send();
-        }
-
-    } else {
-        // return res.status(401).send();
     }
-    // Todo: we are just faking this functionality for now
-    return next();
+    catch (err) {
+        console.error(error);
+        return res.status(500).send(err);
+    }
+};
+
+module.exports = {
+    validateSession
 };

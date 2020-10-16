@@ -1,5 +1,5 @@
 /**
- * Create an Abstract DB class
+ * Create an Abstract DBO class
  */
 
 /* Require the SqLite adapter .verbose() */
@@ -8,7 +8,14 @@ const sqlite3 = require('sqlite3').verbose();
 /* Require the Promise handler */
 const Promise = require('bluebird');
 
+/**
+ * AppDbo Class
+ */
 class AppDbo {
+    /**
+     * AppDbo   constructor
+     * @param   {string} dbPath
+     */
     constructor(dbPath) {
         // initialise sqlite
         this.db = new sqlite3.Database( dbPath , (err) => {
@@ -59,12 +66,18 @@ class AppDbo {
         this.db.run(logs);
     }
 
+    /**
+     * Sqlite3 .run()
+     * @param   {string}    sql
+     * @param   {object}    params
+     * @returns {Promise|Promise}
+     */
     run(sql, params = []) {
         return new Promise((resolve, reject) => {
            this.db.run(sql, params, (err) => {
                if (err) {
                    console.log('Error running sql ' + sql);
-                   console.log(err);
+                   console.error(err);
                    reject(err);
                }
                else {
@@ -74,12 +87,18 @@ class AppDbo {
         });
     }
 
+    /**
+     * Sqlit3 .get()
+     * @param   {string}    sql
+     * @param   {Object}    params
+     * @returns {Promise|Promise}
+     */
     get(sql, params = []) {
         return new Promise((resolve, reject) => {
             this.db.get(sql, params, (err, result) => {
                 if (err) {
                     console.log('Error running sql ' + sql);
-                    console.log(err);
+                    console.error(err);
                     reject(err);
                 }
                 else {
@@ -89,12 +108,18 @@ class AppDbo {
         });
     }
 
+    /**
+     * Sqlite3 .all()
+     * @param   {string}    sql
+     * @param   {object}    params
+     * @returns {Promise|Promise}
+     */
     all(sql, params = []) {
         return new Promise((resolve, reject) => {
             this.db.all(sql, params, (err, rows) => {
                 if (err) {
                     console.log('Error running sql ' + sql);
-                    console.log(err);
+                    console.error(err);
                     reject(err);
                 }
                 else {

@@ -34,7 +34,12 @@
                         console.log("status 2: load setup...");
                         router.push('setup');
                     } else {
-                        router.push('login');
+                        if (checked.iri) {
+                          this.$store.dispatch('loadUser', checked.iri);
+                            router.push('/');
+                        } else {
+                            router.push('login');
+                        }
                     }
                 }
                 if (status === 3) {

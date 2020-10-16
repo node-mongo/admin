@@ -43,14 +43,14 @@ export default {
     },
 
     /*
-    *  GET   /api/v1/users - get the current authenticated user
+    *  GET   /api/users - get the current authenticated user
     */
     getUsers: () => {
         return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users' );
     },
 
     /*
-    *  PUT  /api/v1/users - create or update a user
+    *  PUT  /api/users - create or update a user
     */
     putUpdateUser: ( name, email, password ) => {
         return Vue.prototype.$http.put( MONGO_CONFIG.API_URL + '/users',
@@ -85,7 +85,7 @@ export default {
     *   GET  {iri} - get the current authenticated user
     */
     getUserByIri: ( iri ) => {
-        return Vue.prototype.$http.get( MONGO_CONFIG.server + iri );
+        return Vue.prototype.$http.get( MONGO_CONFIG.SERVER + iri );
     },
 
     /*
@@ -100,23 +100,5 @@ export default {
     */
     getUserLocation: () => {
         return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users/location' );
-    },
-
-    /*
-    *   GET /api/users/states/{country} - Get the users states based on country code
-    */
-    getUserStates: (country) => {
-        return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/user/states/' + country);
-    },
-
-    createControlUser: (data) => {
-        return Vue.prototype.$http.post( MONGO_CONFIG.API_URL + '/setup',
-            {
-                country: data.country,
-                name: data.name,
-                user: data.user,
-                email: data.email,
-                password: data.password
-            });
     }
 }

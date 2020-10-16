@@ -2,22 +2,50 @@
  * Defines a simple authorisation service
  */
 
-/* Requires the configuration data */
+/* Use the database service for queries */
+const AppDBOService = require('./appdbo.service');
+/* Get the User model */
+const UserModel = require('../models/UserRepository');
+/* Load our local config */
 const config = require('../config/env.config');
+/* Initialise */
+const dbo  = new AppDBOService(config.dbPath);
+const User = new UserModel(dbo);
+const hash = require('pbkdf2-password')();
 
 /**
- * We only want to send for allowed domains
- * This method uses allowedDomains stored in the config
- * For a production app: I would parse a file or Db record for more flexibility
+ * Handle login process
  *
- * @param email
+ * @param   {string}    username
+ * @param   {string}    password
+ * @param   {function}  fn
  *
  * @returns {boolean}
  */
-const auth = () => {
+const login = (username, password, fn) => {
+    User.findByUser(username)
+        .then((user) => {
+            if (user && user.salt) {
+                hash({ password: password, salt: user.salt }, (err, pass, salt, hash) => {
+                    if (err) {
+                        fn(new Error(err));
+                    } else {
+                        if (hash === user.hash) {
+                            console.log("success!!");
+                            fn(null, user);
+                        }
+                        else {
+                            fn(new Error('Invalid credentials'));
+                        }
+                    }
+                });
 
+            } else {
+                fn(new Error('Invalid user'));
+            }
+        });
 };
 
 module.exports = {
-    auth
+    login
 };

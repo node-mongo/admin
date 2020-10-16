@@ -66,7 +66,7 @@ export const database = {
             DatabaseApi.getDatabases()
                 .then( ( response ) => {
                     if (response.data.success === true) {
-                        commit( 'setDatabases', response.data.data.databases );
+                        commit( 'setDatabases', response.data.databases );
                         commit( 'setDatabasesLoadStatus', 2 );
                     } else {
                         console.log(response.data.errors);
@@ -93,7 +93,7 @@ export const database = {
             DatabaseApi.getDatabase( data )
                 .then( ( response ) => {
                     commit( 'setActiveDatabase', data );
-                    commit( 'setDatabase', response.data.data.database );
+                    commit( 'setDatabase', response.data.database );
                     commit( 'setDatabaseLoadStatus', 2 );
 
                     let collections = response.data.data.database.collections;
@@ -120,10 +120,10 @@ export const database = {
         */
         createDatabase( { commit }, data ) {
             commit( 'setCreateDatabaseStatus', 1);
-
+s
             DatabaseApi.createDatabase( data )
                 .then( ( response ) => {
-                    commit( 'setCreatedDatabase', response.data.data.database );
+                    commit( 'setCreatedDatabase', response.data.database );
                     commit( 'setCreateDatabaseStatus', 2 );
                 })
                 .catch( (error) => {
@@ -157,8 +157,8 @@ export const database = {
             DatabaseApi.databaseCommand( data )
                 .then( ( response ) => {
                     if (response.data.success === true) {
-                        commit( 'setCommandResults', response.data.data.results );
-                        commit( 'setCommandLoadStatus', 2 );
+                        commit( 'setCommandResults', response.data.results );
+                        commit( 'setCommandLoadStatus', 2 )
 
                     } else {
                         commit( 'setErrorData', response.data.errors);

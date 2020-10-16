@@ -1,2 +1,2 @@
-module.exports.Log = require('./LogRepository');
-module.exports.User = require('./UserRepository');
+module.exports.LogModel = require('./LogRepository');
+module.exports.UserModel = require('./UserRepository');

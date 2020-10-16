@@ -38,10 +38,10 @@ export const users = {
         userRegisterStatus: 0,
         userLoginStatus: 0,
         userLogoutStatus: 0,
-        userAuthStatus: 0,
+        userAuthStatus: JSON.parse( localStorage.getItem('iri') ) || 0,
         emailCheck: {},
         emailCheckStatus: 0,
-        token: JSON.parse( localStorage.getItem('token') ) || ''
+        iri: JSON.parse( localStorage.getItem('iri') ) || ''
     },
 
     /*
@@ -56,12 +56,12 @@ export const users = {
 
             UserAPI.postUser( data.data.name, data.data.email, data.data.password )
                 .then( (response) => {
-                    const token = 'Bearer ' + response.data.token;
-                    window.axios.defaults.headers.common['Authorization'] = token;
-                    localStorage.setItem('token', JSON.stringify(token));
+                    //const token = 'Bearer ' + response.data.token;
+                    //window.axios.defaults.headers.common['Authorization'] = token;
+                    localStorage.setItem('iri', JSON.stringify(response.data.user.iri));
                     commit( 'setUserRegisterStatus', 2 );
-                    commit( 'setUserToken', { token });
-                    dispatch( 'loadUser' );
+                    commit( 'setUserIri', response.data.iri );
+                    dispatch( 'loadUser', response.data.iri );
                 })
                 .catch( (error) => {
                     commit( 'setUserRegisterStatus', 3 );
@@ -74,49 +74,49 @@ export const users = {
          *   Login a user via the API
          */
         loginUser( { commit, dispatch }, data ) {
-          commit( 'setUserLoginStatus', 1);
+            commit( 'setUserLoginStatus', 1);
 
-          UserAPI.loginUser( data.data.user, data.data.password )
-              .then( ( response ) => {
-                  if (response.data.success === true && response.data.uid >= 1) {
-                      const token = 'Bearer ' + response.data.token;
-                      window.axios.defaults.headers.common['Authorization'] = token;
-                      localStorage.setItem('token', JSON.stringify(token));
+            UserAPI.loginUser( data.data.user, data.data.password )
+                .then( ( response ) => {
+                    if (response.data.success === true && response.data.user.iri) {
                       commit( 'setUserLoginStatus', 2);
-                      commit( 'setUserAuthStatus', response.data.uid);
-                      commit( 'setUserToken', { token } );
-                      dispatch( 'loadUser' );
+                      commit( 'setUserAuthStatus', 1);
+                      commit( 'setUserIri', response.data.user.iri );
+                    //    commit( 'setUserToken', { token } );
+                      dispatch( 'loadUser', response.data.user.iri );
 
-                  } else {
+                    } else {
+                      commit( 'setUserLoginStatus', 3);
                       console.log("login error - secondary");
                       console.log(response.data.success);
-                      commit( 'setUserLoginStatus', 3);
-                  }
-              })
-              .catch( (error) => {
-                  console.log("login error - primary");
-                  console.log(error);
-                  commit( 'setUserLoginStatus', 3);
-                  localStorage.removeItem('token');
+                    }
+                })
+                .catch( (error) => {
+                    commit( 'setUserLoginStatus', 3);
+                    console.log("login error - primary");
+                    console.log(error);
+                    localStorage.removeItem('token');
                 }
-              )
-              .finally(() => {
-                  console.log("are we there yet?!");
-              });
+                )
+                .finally(() => {
+                    console.log("are we there yet?!");
+                });
         },
 
         /*
          * Load the current user
          */
-        loadUser( { commit } ) {
+        loadUser( { commit }, iri ) {
             commit( 'setUserLoadStatus', 1 );
 
             UserAPI.getUserByIri(iri)
                 .then( (response) => {
-                    const user = response.data;
+                    const user = response.data.user;
                     if (user.id) {
-                        commit( 'setUser', { user } );
-                        commit( 'setUserAuthStatus', user.id );
+                        localStorage.setItem('iri', JSON.stringify(user.iri));
+                        commit( 'setUser', user );
+                        commit( 'setUserAuthStatus', 1 );
+                        commit( 'setUserIri', user.iri );
                         commit( 'setUserLoadStatus', 2 );
 
                     } else {
@@ -158,12 +158,12 @@ export const users = {
             UserAPI.logoutUser( data.uid )
                 .then( (response) => {
                     if (response.data.success === true && response.data.message === 'success') {
-                        localStorage.removeItem('token');
+                        localStorage.removeItem('iri');
                         commit( 'setUserLogoutStatus', 2 );
                         commit( 'setUserLoadStatus', 0 );
                         commit( 'setUserLoginStatus', 0 );
                         commit( 'setUserAuthStatus', 0 );
-                        commit( 'setUserToken', '' );
+                        commit( 'setUserIri', '' );
                         commit( 'setUser', {} );
                     }
                 })
@@ -189,7 +189,7 @@ export const users = {
                     commit('setEmailCheck', {});
                     console.log(error);
                 });
-        }
+        },
     },
 
     /*
@@ -206,15 +206,15 @@ export const users = {
         /*
          * Sets the user
          */
-        setUser( state, { user } ) {
+        setUser( state, user ) {
             state.user = user;
         },
 
         /*
          * Sets the user token
          */
-        setUserToken( state, { token } ) {
-            state.token = token;
+        setUserIri( state, iri ) {
+            state.iri = iri;
         },
 
         /*
@@ -339,7 +339,7 @@ export const users = {
          *   Checks if the token is set - toke indicate that the user has an API token
          */
         isLoggedIn( state ) {
-            return !!state.token;
+            return (state.userAuthStatus !== 0 && state.iri !== '');
         },
 
         /*
