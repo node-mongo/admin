@@ -1,7 +1,7 @@
 .DS_Store
 node_modules
 storage/sqlite/db
-storage/sqlite/se
+storage/sqlite/sessions
 storage/cert/*
 
 # local env files
