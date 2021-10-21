@@ -4,6 +4,8 @@ storage/sqlite/db
 storage/sessions
 
 # local env files
+src/.env
+src/.env.*
 .env
 .env.local
 .env.*.local

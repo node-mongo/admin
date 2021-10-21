@@ -1,18 +1,18 @@
 /*
- * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
- * @version      user.js 1001 6/8/20, 8:58 pm  Gilbert Rehling $
- * @package      PhpMongoAdmin\resources
+ * NodeMongoAdmin (www.nodemongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      user.js 1001 15/9/21, 12:17 pm  Gilbert Rehling $
+ * @package      NodeMongoAdmin\Spa
  * @subpackage   user.js
- * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
- * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
- * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
+ * @link         https://github.com/node-mongo/admin  Node MongoDB Admin
+ * @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      NodeMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
  * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
- *  php-mongo-admin - License conditions:
+ *  node-mongo-admin - License conditions:
  *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
  *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
  *  See licence.txt for the complete licensing outline.
  *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
- *  See COPYRIGHT.php for copyright notices and further details.
+ *  See COPYRIGHT.js for copyright notices and further details.
  */
 
 /*
@@ -24,15 +24,89 @@ import Vue from 'vue';
 
 export default {
     /*
+    *   GET  /api/users/{uid} - get the current authenticated user
+    */
+    getUser: ( uid ) => {
+        return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users/' + uid );
+    },
+
+    /*
+    *  GET   /api/users/all - get the current authenticated user
+    */
+    getUsers: () => {
+        return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users/all' );
+    },
+
+    /*
+    *   GET  {iri} - get the current authenticated user
+    */
+    getUserByIri: ( iri ) => {
+        return Vue.prototype.$http.get( MONGO_CONFIG.SERVER + iri, {
+            withCredentials: true
+        });
+    },
+
+    /*
+    *  PUT  /api/users - create or update a user
+    */
+    putUpdateUser: ( dataObj ) => {
+        return Vue.prototype.$http.put( MONGO_CONFIG.API_URL + '/users',
+            {
+                ...dataObj
+            });
+    },
+
+    /*
+    *  POST  /api/users - create a new user
+    */
+    postUser: ( data ) => {
+        let dataObj = {
+            active: data.active,
+            database: data.database,
+            isAdmin: data.isAdmin,
+            password: data.password,
+            password2: data.password2,
+            roles: data.roles,
+            type: data.type,
+            user: data.user,
+        }
+        // only added these if they exist so they dont get validated as empty vars
+        if (data.email) {
+            dataObj.email = data.email
+        }
+        if (data.name) {
+            dataObj.name = data.name
+        }
+        return Vue.prototype.$http.post( MONGO_CONFIG.API_URL + '/users',
+            {
+                ...dataObj
+            });
+    },
+
+    /*
+    *   DELETE /api/users - delete a single user
+    */
+    deleteUser: ( data ) => {
+        return window.axios.delete( MONGO_CONFIG.API_URL + '/users/' + data.id + '/' + data.type + '/' + data.user + '?uid=' + data.id )
+    },
+
+    /*
     *  POST  /api/auth/login - login a user
     */
-    loginUser: ( user, password ) => {
+    loginUser: ( data ) => {
         return Vue.prototype.$http.post( MONGO_CONFIG.API_URL + '/auth/login',
             {
-                user: user,
-                password: password,
-                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
-            });
+                ...data,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN'],
+            },
+            {
+                withCredentials: true,
+                crossDomain: true,
+                xhrFields: {
+                    withCredentials: true
+                }
+            }
+        );
     },
 
     /*
@@ -43,50 +117,12 @@ export default {
     },
 
     /*
-    *  GET   /api/users - get the current authenticated user
+    *   GET  /api/users/fetch/{uid} - get the current authenticated user
     */
-    getUsers: () => {
-        return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users' );
+    fetchUser: ( uid ) => {
+        return window.axios.get( MONGO_CONFIG.API_URL + '/users/fetch/' + uid )
     },
 
-    /*
-    *  PUT  /api/users - create or update a user
-    */
-    putUpdateUser: ( name, email, password ) => {
-        return Vue.prototype.$http.put( MONGO_CONFIG.API_URL + '/users',
-            {
-                name: name,
-                email: email,
-                password: password
-            });
-    },
-
-    /*
-    *  POST  /api/users - register a new user
-    */
-    postUser: ( name, email, password ) => {
-        return Vue.prototype.$http.post( MONGO_CONFIG.API_URL + '/users',
-            {
-                name: name,
-                email: email,
-                password: password,
-                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
-            });
-    },
-
-    /*
-    *   GET  /api/users/{uid} - get the current authenticated user
-    */
-    getUser: ( uid ) => {
-        return Vue.prototype.$http.get( MONGO_CONFIG.API_URL + '/users/' + uid );
-    },
-
-    /*
-    *   GET  {iri} - get the current authenticated user
-    */
-    getUserByIri: ( iri ) => {
-        return Vue.prototype.$http.get( MONGO_CONFIG.SERVER + iri );
-    },
 
     /*
     *   GET /api/users/email/{email} - Check | verify an email address

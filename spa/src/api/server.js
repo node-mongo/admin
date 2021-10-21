@@ -20,51 +20,60 @@
 */
 import { MONGO_CONFIG } from "../config";
 
-import Vue from 'vue';
-const axios = Vue.prototype.$http;
-
 export default {
     /*
     *   Get the server details displayed on the dashboard
     *   !! This is handled by a specific ServerController !!
-    *   GET /api/v1/server
+    *   GET /api/server
     */
     getServer: () => {
-        return axios.get( MONGO_CONFIG.API_URL + '/server' );
+        return window.axios.get( MONGO_CONFIG.API_URL + '/server' );
+    },
+
+    /*
+    *   Get the server processes details displayed on the dashboard
+    *   !! This is handled by a specific ServerController !!
+    *   GET /api/server/processes
+    */
+    getServerProcesses: () => {
+        return window.axios.get( MONGO_CONFIG.API_URL + '/server/processes' );
+    },
+
+    /*
+    *   Get the server status details displayed on the dashboard
+    *   !! This is handled by a specific ServerController !!
+    *   GET /api/server/{database}/status
+    */
+    getServerStatus: (database) => {
+        return window.axios.get( MONGO_CONFIG.API_URL + '/server/' + database + '/status' );
     },
 
     /*
     *   Get the servers setup by current user
-    *   GET /api/v1/servers
+    *   GET /api/servers
     */
     getServers: () => {
-        return axios.get( MONGO_CONFIG.API_URL + '/servers' );
+        return window.axios.get( MONGO_CONFIG.API_URL + '/servers' );
     },
 
     /*
     *   Save the server details either created or edited on the Servers view
-    *   GET /api/v1/servers
+    *   POST /api/servers
     */
     saveServer: ( data ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/servers',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/servers',
             {
-                id: data.id,
-                host: data.host,
-                port: data.port,
-                username: data.username,
-                password: data.password,
-                active: data.active,
-                user_id: data.user_id,
+                ...data,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
             });
     },
 
     /*
     *   Activate the server configuration
-    *   GET /api/v1/servers/activate
+    *   GET /api/servers/activate
     */
     activateServer: (data) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/servers/activate',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/servers/activate',
             {
                 id: data,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
@@ -73,9 +82,9 @@ export default {
 
     /*
     *   Delete the server configurations
-    *   GET /api/v1/servers/{id}
+    *   GET /api/servers/{id}
     */
     deleteServer: (data) => {
-        return axios.delete( MONGO_CONFIG.API_URL + '/servers/' + data );
+        return window.axios.delete( MONGO_CONFIG.API_URL + '/servers/' + data );
     }
 }

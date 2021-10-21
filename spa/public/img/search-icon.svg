@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - NodeMongoAdmin (www.nodemongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      search-icon.svg 1001 15/9/21, 12:16 pm  Gilbert Rehling $
+  - @package      NodeMongoAdmin\Api
+  - @subpackage   search-icon.svg
+  - @link         https://github.com/node-mongo/admin  Node MongoDB Admin
+  - @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      NodeMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  node-mongo-admin - License conditions:
+  -  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
+  -  See COPYRIGHT.js for copyright notices and further details.
+  -->
+
 <svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
     <title>search</title>

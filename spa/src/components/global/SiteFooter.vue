@@ -1,19 +1,19 @@
 <!--
-  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      SiteFooter.vue 1001 6/8/20, 8:58 pm  Gilbert Rehling $
-  - @package      PhpMongoAdmin\resources
+  - NodeMongoAdmin (www.nodemongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      SiteFooter.vue 1001 15/9/21, 12:17 pm  Gilbert Rehling $
+  - @package      NodeMongoAdmin\Spa
   - @subpackage   SiteFooter.vue
-  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
-  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
-  - @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
+  - @link         https://github.com/node-mongo/admin  Node MongoDB Admin
+  - @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      NodeMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
   - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
-  -  php-mongo-admin - License conditions:
+  -  node-mongo-admin - License conditions:
   -  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
   -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
   -  See licence.txt for the complete licensing outline.
   -  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
-  -  See COPYRIGHT.php for copyright notices and further details.
-  -->
+  -  See COPYRIGHT.js for copyright notices and further details.
+  --> -->
 
 <style lang="scss">
     .footer-container {
@@ -65,7 +65,7 @@
                     <ul class="footer-menu">
                         <li>
                             <router-link :to="{ name: 'public-about' }">
-                                <span :title="showLanguage('title', 'aboutPhpMongoAdminTitle')" v-text="showLanguage('nav','about_footer')"></span>
+                                <span :title="showLanguage('title', 'aboutNodeMongoAdminTitle')" v-text="showLanguage('nav','about_footer')"></span>
                             </router-link>
                         </li>
                         <li>
@@ -90,7 +90,7 @@
                     <ul class="footer-menu float-left">
                         <li>
                             <router-link :to="{ name: 'public-about' }">
-                                <span :title="showLanguage('title','aboutPhpMongoAdminTitle')" v-text="showLanguage('nav','about_footer')"></span>
+                                <span :title="showLanguage('title','aboutNodeMongoAdminTitle')" v-text="showLanguage('nav','about_footer')"></span>
                             </router-link>
                         </li>
                         <li>
@@ -145,7 +145,7 @@
             *   Determines if the user is a member
             */
             isMember() {
-                var isMember = this.$cookie.get('app-member');
+                var isMember = this.$cookies.get('app-member');
                 return ((isMember && isMember.length >= 3) || this.userLoadStatus);
             },
 
@@ -210,7 +210,7 @@
             * get the country name of the user
             */
             getCountryNameValue() {
-                this.country = this.$store.getters.getCountryName; // this.$cookie.get('my-country');
+                this.country = this.$store.getters.getCountryName;
             }
         },
 

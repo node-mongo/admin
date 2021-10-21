@@ -1,18 +1,29 @@
+/*
+ * NodeMongoAdmin (www.nodemongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      user.controller.js 1001 15/9/21, 12:12 pm  Gilbert Rehling $
+ * @package      NodeMongoAdmin\Api
+ * @subpackage   user.controller.js
+ * @link         https://github.com/node-mongo/admin  Node MongoDB Admin
+ * @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      NodeMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  node-mongo-admin - License conditions:
+ *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
+ *  See COPYRIGHT.js for copyright notices and further details.
+ */
+
 /**
  * Defines the controller for handling the emailing API route
  */
 
-// Require the logging service
+/* Require the logging service */
 const { LogsService } = require('../../app/services');
-/* Use the database service for queries */
-const { AppDBOService } = require('../../app/services');
-/* Get the User model */
+
+/* Require the User model */
 const { UserModel } = require('../../app/models');
-/* Load our local config */
-const config = require('../../app/config/env.config');
-/* Initialise */
-const dbo = new AppDBOService(config.dbPath);
-const User = new UserModel(dbo);
 
 /* Define the send method */
 const findUser = (req, res) => {
@@ -28,7 +39,7 @@ const findUser = (req, res) => {
         return res.status(201).json({message: "Not found"});
     }
 
-    User.findById(id)
+    UserModel.findById(id)
         .then((user) => {
             // check that the sender's domain is authorized
             if (user) {

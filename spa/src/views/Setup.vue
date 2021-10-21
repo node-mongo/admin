@@ -1,9 +1,26 @@
+<!--
+  - NodeMongoAdmin (www.nodemongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      Setup.vue 1001 15/9/21, 12:17 pm  Gilbert Rehling $
+  - @package      NodeMongoAdmin\Spa
+  - @subpackage   Setup.vue
+  - @link         https://github.com/node-mongo/admin  Node MongoDB Admin
+  - @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      NodeMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  node-mongo-admin - License conditions:
+  -  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
+  -  See COPYRIGHT.js for copyright notices and further details.
+  -->
+
 <style scoped>
 
 </style>
 
 <template>
-  <div class="content-container text-center">
+  <div class="content-container text-center" v-if="show">
     <div class="row justify-content-center grid-container">
       <div class="column">
         <div class="card">
@@ -194,15 +211,15 @@
          */
         computed: {
             submitButtonClass() {
-                return this.formStatus === 0 ? 'secondary' : 'success';
+                return this.formStatus === 0 ? 'secondary' : 'success'
             },
 
             submitButtonStatus() {
-                return this.formStatus === 0 ? 'true' : 'false';
+                return this.formStatus === 0 ? 'true' : 'false'
             },
 
             enableSubmit() {
-                return !(this.formStatus === 1);
+                return !(this.formStatus === 1)
             },
 
             getCountries() {
@@ -218,7 +235,7 @@
              * Calls the Translation and Language service
              */
             showLanguage(context, key) {
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             hasError(name) {
@@ -239,64 +256,68 @@
 
                 if (!this.credentials.name) {
                     this.errors.name = "Name required";
-                    this.credentials.hasErrors = true;
+                    this.credentials.hasErrors = true
                 }
 
                 if (!this.credentials.user) {
                     this.errors.user = "Username required";
-                    this.credentials.hasErrors = true;
+                    this.credentials.hasErrors = true
                 }
 
                 if (!this.credentials.password) {
                     this.errors.password = "Password required";
-                    this.credentials.hasErrors = true;
+                    this.credentials.hasErrors = true
                 }
 
                 if (!this.credentials.email) {
                     this.errors.email = 'Email required';
-                    this.credentials.hasErrors = true;
+                    this.credentials.hasErrors = true
 
                 } else if (!this.validEmail(this.credentials.email)) {
                     this.errors.email = 'Valid email required';
-                    this.credentials.hasErrors = true;
+                    this.credentials.hasErrors = true
                 }
 
                 if (this.credentials.hasErrors === false) {
-                    this.createUser();
+                    this.createUser()
                 }
             },
 
             validEmail: function (email) {
                 let re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                return re.test(email);
-            },
-
-            closeThisDialog() {
-                this.show = false;
+                return re.test(email)
             },
 
             createUser() {
                 console.log("sending: " + this.credentials);
                 //let data = { data: this.credentials };
                 this.$store.dispatch( 'createControlUser', this.credentials );
-                this.handleCreateUser();
+                this.handleCreateUser()
             },
 
             handleCreateUser() {
                 let status = this.$store.getters.getControlUserStatus;
                 if (status === 1) {
                     setTimeout(() => {
-                        this.handleCreateUser();
+                        this.handleCreateUser()
                     }, 250)
                 }
                 if (status === 2) {
                     EventBus.$emit('show-success', { notification: 'Control user created: please login using the credential you entered',timer: 7500});
-                    router.push('login');
+                    router.push({ name: 'login' })
                 }
                 if (status === 3) {
-                  this.errorMessage = ' Control user creation failed: please check your information and try again';
+                  this.errorMessage = ' Control user creation failed: please check your information and try again'
                 }
-            }
-        }
+            },
+
+          getSetup(){
+            this.show = this.$store.getters.getSetup
+          }
+        },
+
+      mounted() {
+          this.getSetup()
+      }
     }
 </script>

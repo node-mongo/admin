@@ -1,18 +1,18 @@
 /*
- * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
- * @version      database.js 1001 6/8/20, 8:58 pm  Gilbert Rehling $
- * @package      PhpMongoAdmin\resources
+ * NodeMongoAdmin (www.nodemongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      database.js 1001 15/9/21, 12:17 pm  Gilbert Rehling $
+ * @package      NodeMongoAdmin\Spa
  * @subpackage   database.js
- * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
- * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
- * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
+ * @link         https://github.com/node-mongo/admin  Node MongoDB Admin
+ * @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      NodeMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
  * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
- *  php-mongo-admin - License conditions:
+ *  node-mongo-admin - License conditions:
  *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
  *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
  *  See licence.txt for the complete licensing outline.
  *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
- *  See COPYRIGHT.php for copyright notices and further details.
+ *  See COPYRIGHT.js for copyright notices and further details.
  */
 
 /*
@@ -67,19 +67,24 @@ export const database = {
                 .then( ( response ) => {
                     if (response.data.success === true) {
                         commit( 'setDatabases', response.data.databases );
-                        commit( 'setDatabasesLoadStatus', 2 );
+                        commit( 'setDatabasesLoadStatus', 2 )
                     } else {
                         console.log(response.data.errors);
                         commit( 'setErrorData', response.data.errors );
-                        commit( 'setDatabasesLoadStatus', 3 );
+                        commit( 'setDatabasesLoadStatus', 3 )
                     }
                 })
                 .catch( (error) => {
-                    console.log(error);
                     commit( 'setDatabases', [] );
                     commit( 'setDatabasesLoadStatus', 3 );
-                    commit( 'setErrorData', error.errors );
-                    EventBus.$emit('no-results-found', { notification: 'No databases were returned from the api - please try again later' });
+                    commit( 'setErrorData', error.response.data );
+                    if (error.response) {
+                        console.log('check setup error response message: ' + error.response.data.message);
+                        console.log('check setup error response data.errors: ' + error.response.data.errors[0]);
+                        console.log('check setup error response status: ' + error.response.status);
+                        console.log('check setup error response headers: ' + error.response.headers)
+                    }
+                    EventBus.$emit('no-results-found', { notification: 'No databases were returned from the api - please try again later' })
                 });
         },
 
@@ -97,14 +102,19 @@ export const database = {
                     commit( 'setDatabaseLoadStatus', 2 );
 
                     let collections = response.data.data.database.collections;
-                    dispatch('setDbCollections', collections);
+                    dispatch('setDbCollections', collections)
                 })
                 .catch( (error) => {
                     commit( 'setDatabase', {} );
                     commit( 'setDatabaseLoadStatus', 3 );
-                    commit( 'setErrorData', error.errors );
-                    console.log(error);
-                    EventBus.$emit('no-results-found', { notification: 'No database was returned from the api - please try again later' });
+                    commit( 'setErrorData', error.response.data );
+                    if (error.response) {
+                        console.log('check setup error response message: ' + error.response.data.message);
+                        console.log('check setup error response data.errors: ' + error.response.data.errors[0]);
+                        console.log('check setup error response status: ' + error.response.status);
+                        console.log('check setup error response headers: ' + error.response.headers)
+                    }
+                    EventBus.$emit('no-results-found', { notification: 'No database was returned from the api - please try again later' })
                 });
         },
 
@@ -120,7 +130,7 @@ export const database = {
         */
         createDatabase( { commit }, data ) {
             commit( 'setCreateDatabaseStatus', 1);
-s
+
             DatabaseApi.createDatabase( data )
                 .then( ( response ) => {
                     commit( 'setCreatedDatabase', response.data.database );
@@ -128,8 +138,13 @@ s
                 })
                 .catch( (error) => {
                     commit( 'setCreateDatabaseStatus', 3 );
-                    commit( 'setErrorData', error);
-                    console.log(error);
+                    commit( 'setErrorData', error.response.data);
+                    if (error.response) {
+                        console.log('check setup error response message: ' + error.response.data.message);
+                        console.log('check setup error response data.errors: ' + error.response.data.errors[0]);
+                        console.log('check setup error response status: ' + error.response.status);
+                        console.log('check setup error response headers: ' + error.response.headers);
+                    }
                 });
         },
 

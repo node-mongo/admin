@@ -91,23 +91,23 @@
                 <li v-bind:class="{active: getActivePanel('servers')}">
                     <span v-on:click="loadPanel('servers', $event)"><img src="img/icon/servers2.png" /> <span v-bind:title="showLanguage('title', 'serversTitle')" v-text="showLanguage('nav', 'servers')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('execute')}">
-                    <span class="hide" v-on:click="loadPanel('execute', $event)"><img src="img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('nav', 'execute')"></span></span>
+                <li v-bind:class="{active: getActivePanel('execute')}" v-if="isRootUser || isAdminUser">
+                    <span v-on:click="loadPanel('execute', $event)"><img src="img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('nav', 'execute')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('status')}">
-                    <span class="hide" v-on:click="loadPanel('status', $event)"><img src="img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'statusTitle')" v-text="showLanguage('nav', 'status')"></span></span>
+                <li v-bind:class="{active: getActivePanel('status')}" v-if="isRootUser || isAdminUser">
+                    <span v-on:click="loadPanel('status', $event)"><img src="img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'statusTitle')" v-text="showLanguage('nav', 'status')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('processes')}">
-                    <span class="hide" v-on:click="loadPanel('processes', $event)"><img src="img/icon/report.png" /> <span v-bind:title="showLanguage('title', 'processesTitle')" v-text="showLanguage('nav', 'processes')"></span></span>
+                <li v-bind:class="{active: getActivePanel('processes')}" v-if="isRootUser || isAdminUser">
+                    <span v-on:click="loadPanel('processes', $event)"><img src="img/icon/report.png" /> <span v-bind:title="showLanguage('title', 'processesTitle')" v-text="showLanguage('nav', 'processes')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('command')}">
-                    <span class="hide" v-on:click="loadPanel('command', $event)"><img src="img/icon/s-icon.gif" /> <span v-bind:title="showLanguage('title', 'commandTitle')" v-text="showLanguage('nav', 'command')"></span></span>
+                    <span v-on:click="loadPanel('command', $event)"><img src="img/icon/s-icon.gif" /> <span v-bind:title="showLanguage('title', 'commandTitle')" v-text="showLanguage('nav', 'command')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('users')}">
-                    <span class="hide" v-on:click="loadPanel('users', $event)"><img src="img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'usersTitle')" v-text="showLanguage('nav', 'users')"></span></span>
+                <li v-bind:class="{active: getActivePanel('users')}" v-if="isRootUser || isAdminUser || isUserAdmin">
+                    <span v-on:click="loadPanel('users', $event)"><img src="img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'usersTitle')" v-text="showLanguage('nav', 'users')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('master')}">
-                    <span class="hide" v-on:click="loadPanel('master', $event)"><img src="img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'masterTitle')" v-text="showLanguage('nav', 'master')"></span></span>
+                <li v-bind:class="{active: getActivePanel('master')}" v-if="isRootUser || isAdminUser">
+                    <span v-on:click="loadPanel('master', $event)"><img src="img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'masterTitle')" v-text="showLanguage('nav', 'master')"></span></span>
                 </li>
             </ul>
         </div>
@@ -124,7 +124,7 @@
         /*
          *  Its a one prop shop
          */
-        props: ['collapsed'],
+        props: ['collapsed','user'],
 
         /*
         *   Data used with this component
@@ -132,8 +132,6 @@
         data() {
             return {
                 activePanel: null,
-                isLoggedIn: null,
-                user: {}
             };
         },
 
@@ -145,19 +143,34 @@
             *   Retrieves the User Load Status from Vuex
             */
             userLoadStatus() {
-                return (this.$store.getters.getUserLoadStatus === 2);
+                return (this.$store.getters.getUserLoadStatus === 2)
             },
 
             /*
             *   Defines a check that we have aa app member
             */
             isMember() {
-                let isMember = this.$cookie.get('app-member');
-                return ((isMember && isMember.length >= 3) || this.userLoadStatus);
+                let isMember = this.$cookies.get('app-member');
+                return ((isMember && isMember.length >= 3) || this.userLoadStatus)
             },
 
+            /*
+             *  Monitor the active Nav
+             */
             activeNav() {
-                this.activePanel = this.$store.getters.getActiveNav;
+                return this.$store.getters.getActiveNav
+            },
+
+            isRootUser() {
+                return (this.user.user_role && this.user.user_role.hasRoot === true)
+            },
+
+            isAdminUser() {
+                return (this.user.admin_user && this.user.admin_user === "1")
+            },
+
+            isUserAdmin() {
+                return this.$store.getters.canUserAdminUsers;
             }
         },
 
@@ -170,35 +183,21 @@
             */
             showLanguage( context, key ) {
                 // return this.$trans( context, key );
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             /*
             *   Get the active panel
             */
             getActivePanel: function(panel) {
-                return this.activePanel === panel;
+                return this.activePanel === panel
             },
 
             /*
             *   Set the active panel
             */
             setActivePanel: function() {
-                this.activePanel = this.$store.getters.getActivePanel;
-            },
-
-            /*
-            *   Return the logged is state
-            */
-            userLoggedIn() {
-                this.isLoggedIn = this.$store.getters.isLoggedIn;
-            },
-
-            /*
-            *   Retrieves the User from Vuex
-            */
-            getUser() {
-                this.user = this.$store.getters.getUser;
+                this.activePanel = this.$store.getters.getActivePanel
             },
 
             /*
@@ -207,13 +206,8 @@
             loadPanel( item ) {
                 this.$store.dispatch('setActiveNav', item);
                 EventBus.$emit('hide-panels');
-                EventBus.$emit('show-' + item);
+                EventBus.$emit('show-' + item)
             }
-        },
-
-        mounted() {
-            this.userLoggedIn();
-            this.getUser();
         },
 
        watch: {

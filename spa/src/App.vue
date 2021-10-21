@@ -1,3 +1,20 @@
+<!--
+  - NodeMongoAdmin (www.nodemongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      App.vue 1001 15/9/21, 12:17 pm  Gilbert Rehling $
+  - @package      NodeMongoAdmin\Spa
+  - @subpackage   App.vue
+  - @link         https://github.com/node-mongo/admin  Node MongoDB Admin
+  - @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      NodeMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  node-mongo-admin - License conditions:
+  -  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
+  -  See COPYRIGHT.js for copyright notices and further details.
+  -->
+
 <template>
   <transition mode="out-in">
     <router-view />
@@ -5,7 +22,7 @@
 </template>
 
 <script>
-    import router from './router'
+    import router from './router';
 
     export default {
         name: 'App',
@@ -32,19 +49,27 @@
                     let checked = this.$store.getters.getSetup;
                     if (checked === false) {
                         console.log("status 2: load setup...");
-                        router.push('setup');
+                        router.push({ name: 'public-setup' });
                     } else {
                         if (checked.iri) {
-                          this.$store.dispatch('loadUser', checked.iri);
-                            router.push('/');
+                            this.$store.dispatch('loadUser', checked.iri);
                         } else {
-                            router.push('login');
+                            console.log("go to login!");
+                            router.push({ name: 'login'});
                         }
                     }
                 }
                 if (status === 3) {
-                    console.log("status 3: load setup...");
-                    router.push('setup');
+                    let errorData = this.$store.getters.getAppErrorData;
+                    console.log("errorData: " + errorData);
+                    if (errorData && errorData.error && errorData.error === 'Unable to connect to API') {
+                        this.$store.dispatch('clearUser');
+                        console.log("App.vue network error...");
+                        router.push({ name: 'public'});
+                    } else {
+                      console.log("status 3: load setup...");
+                      router.push({ name: 'public-setup' });
+                    }
                 }
             }
         },

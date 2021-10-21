@@ -19,6 +19,13 @@
     .collection-list-item {
         margin-top: 10px;
         position: relative;
+        border-bottom: 1px solid $regularGrey !important;
+
+        span {
+            &:hover {
+                color: $darkGreyColor;
+            }
+        }
 
         li:last-child {
             display: block;
@@ -29,14 +36,14 @@
 
 <template>
     <li ref="colbox" class="collection-list-item">
-        <img alt="Collection icon" src="img/icon/collection.png" /> <span class="pma-link" @click="$emit('loadCollection', getName)">{{getName}}</span>
+        <img alt="Collection icon" src="img/icon/collection.png" /> <span class="pma-link" @click="$emit('loadDbsCollection', getName)">{{getName}}</span>
     </li>
 </template>
 
 <script>
     export default {
         /*
-        *   The component accepts one db as a propertys
+        *   The component accepts one db as a property
         */
         props: ['collection'],
 

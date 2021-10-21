@@ -1,19 +1,19 @@
 <!--
-  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      Public.vue 1001 6/8/20, 8:58 pm  Gilbert Rehling $
-  - @package      PhpMongoAdmin\resources
+  - NodeMongoAdmin (www.nodemongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      Public.vue 1001 15/9/21, 12:17 pm  Gilbert Rehling $
+  - @package      NodeMongoAdmin\Spa
   - @subpackage   Public.vue
-  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
-  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
-  - @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
+  - @link         https://github.com/node-mongo/admin  Node MongoDB Admin
+  - @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      NodeMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
   - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
-  -  php-mongo-admin - License conditions:
+  -  node-mongo-admin - License conditions:
   -  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
   -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
   -  See licence.txt for the complete licensing outline.
   -  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
-  -  See COPYRIGHT.php for copyright notices and further details.
-  -->
+  -  See COPYRIGHT.js for copyright notices and further details.
+  --> -->
 
 <style lang="scss">
   div.public-view {
@@ -42,6 +42,7 @@
 
 <template>
   <div id="app-layout" class="public_view off-canvas-wrapper-inner" ref="appLayout">
+    <h2 style="color: red; text-align: center" v-if="getAppError && getAppError.status === 404">{{ cannotConnect }}</h2>
     <header class="header-content">
       <navigation></navigation>
     </header>
@@ -55,10 +56,6 @@
     <router-view></router-view>
 
     <site-footer></site-footer>
-
-    <register-modal></register-modal>
-
-    <setup-modal></setup-modal>
 
     <login-modal></login-modal>
 
@@ -80,13 +77,9 @@ import MessageNotification from "../components/global/MessageNotification";
 
 import SiteFooter from "../components/global/SiteFooter.vue";
 
-import RegisterModal from "../components/global/RegisterModal.vue";
-
 import LoginModal from "../components/global/LoginModal.vue";
 
 import LanguageModal from "../components/global/LanguageModal";
-
-import SetupModal from "../components/global/SetupModal.vue";
 
 export default {
   components: {
@@ -95,15 +88,26 @@ export default {
     ErrorNotification,
     MessageNotification,
     SiteFooter,
-    RegisterModal,
     LoginModal,
     LanguageModal,
-    SetupModal,
   },
 
-  method: {
+  data() {
+      return {
+          errorData: null,
+          cannotConnect: "Unable to connect to API. Please ensure the NodeJs instance is running..."
+      }
+  },
+
+    computed: {
+        getAppError() {
+            return this.$store.getters.getAppErrorData
+        },
+    },
+
+  methods: {
     getCountryFromCookie() {
-      return this.$cookie.get("my-country");
+      return this.$cookies.get("my-country");
     },
 
     getCountryFromStore() {
@@ -113,23 +117,24 @@ export default {
 
   mounted() {
     if (this.getCountryFromCookie !== this.getCountryFromStore)  {
-      this.$store.dispatch("setCountryNameFromCookie", this.$cookie.get("my-country"));
+      this.$store.dispatch("setCountryNameFromCookie", this.$cookies.get("my-country"));
     }
   },
 
   created() {
-    //this.$store.dispatch( "getLocation");
     this.$store.dispatch( "setDefaultLanguage" );
 
     this.$http.interceptors.response.use(undefined, function (err) {
-      return new Promise(function () {
-        if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
-          this.$store.dispatch("logoutUser");
-        }
-        throw err;
-      });
+        console.error("layout.vue created: err: " + err);
+        //let error = err.toJSON();
+        return new Promise(function () {
+            if (err.status && err.status === 401 && err.config && !err.config.__isRetryRequest) {
+                this.$store.dispatch("logoutUser");
+                return
+            }
+            throw err;
+        });
     });
-    //this.$store.dispatch( "loadUser" );
   },
 }
 </script>

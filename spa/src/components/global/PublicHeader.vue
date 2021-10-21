@@ -1,19 +1,19 @@
 <!--
-  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      PublicHeader.vue 1001 6/8/20, 8:58 pm  Gilbert Rehling $
-  - @package      PhpMongoAdmin\resources
+  - NodeMongoAdmin (www.nodemongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      PublicHeader.vue 1001 15/9/21, 12:17 pm  Gilbert Rehling $
+  - @package      NodeMongoAdmin\Spa
   - @subpackage   PublicHeader.vue
-  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
-  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
-  - @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
+  - @link         https://github.com/node-mongo/admin  Node MongoDB Admin
+  - @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      NodeMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
   - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
-  -  php-mongo-admin - License conditions:
+  -  node-mongo-admin - License conditions:
   -  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
   -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
   -  See licence.txt for the complete licensing outline.
   -  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
-  -  See COPYRIGHT.php for copyright notices and further details.
-  -->
+  -  See COPYRIGHT.js for copyright notices and further details.
+  --> -->
 
 <style lang="scss">
     /* @import '~@/abstracts/_variables.scss'; */
@@ -241,13 +241,9 @@
             },
 
             isMember() {
-                let isMember = this.$cookie.get('nodemongoapp-member');
-                return ((isMember && isMember.length === 1) || this.userLoadStatus);
+                let isMember = this.$cookies.get('nodemongo-member');
+                return ((isMember && isMember.length >= 5) || this.userLoadStatus);
             },
-
-            getCountryName() {
-                return this.$store.getters.getCountryName;
-            }
         },
 
         /*
@@ -258,7 +254,6 @@
             * Calls the Translation and Language service
             */
             showLanguage( context, key ) {
-                // return this.$trans( context, key );
                 return this.$store.getters.getLanguageString( context, key );
             },
 
@@ -284,13 +279,23 @@
             */
             getUser() {
                 this.user = this.$store.getters.getUser;
-            }
+            },
+
+            resetStatus(logout) {
+              if (logout) {
+                this.isLoggedIn = null
+              }
+            },
         },
 
         mounted() {
             this.getCountryNameValue();
             this.userLoggedIn();
             this.getUser();
+
+            EventBus.$on('user-logged-out', () => {
+              this.resetStatus(true)
+            })
         },
 
         watch: {

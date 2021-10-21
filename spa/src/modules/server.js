@@ -41,7 +41,11 @@ export const server = {
         serverActivateStatus: 0,
         serverDeleteStatus: 0,
         displayServer: {},
-        displayServerStatus: 0
+        displayServerStatus: 0,
+        loadServerStatus: 0,
+        serverStatus: {},
+        loadServerProcesses: 0,
+        serverProcesses: []
     },
 
     /*
@@ -56,15 +60,13 @@ export const server = {
 
             ServerApi.getServers()
                 .then( ( response ) => {
-                    console.log("found server configs: " + response.data.data.servers);
-                    commit( 'setServers', response.data.data.servers );
+                    commit( 'setServers', response.data.servers );
                     commit( 'setServersLoadStatus', 2 );
                 })
                 .catch( (error) => {
                     commit( 'setServers', [] );
                     commit( 'setServersLoadStatus', 3 );
-                    console.log(error);
-                    //EventBus.$emit('no-servers-found', { notification: 'No servers were returned from the api - please try again later' });
+                    console.log(error.toJSON());
                 });
         },
 
@@ -76,46 +78,59 @@ export const server = {
 
             ServerApi.getServer()
                 .then( ( response ) => {
-                    commit( 'setServer', response.data.data.server );
+                    commit( 'setServer', response.data.server );
                     commit( 'setServerLoadStatus', 2 );
                 })
                 .catch( (error) => {
                     commit( 'setServer', {} );
                     commit( 'setServerLoadStatus', 3 );
-                    console.log(error);
+                    console.log(error.toJSON());
                 });
         },
 
+        /*
+         * Save a server configuration
+         */
         saveServer( { commit }, data) {
             commit( 'setServerSaveStatus', 1 );
 
             ServerApi.saveServer(data)
                 .then( ( response ) => {
-                    commit( 'setServerConfig', response.data.data.server );
+                    if (data.id) {
+                        commit( 'setUpdateConfig', response.data.server );
+                    } else {
+                        commit( 'setServerConfig', response.data.server );
+                    }
                     commit( 'setServerSaveStatus', 2 );
                 })
                 .catch( (error) => {
                     commit( 'setServerConfig', {} );
                     commit( 'setServerSaveStatus', 3 );
-                    console.log(error);
+                    console.log(error.toJSON());
                 });
         },
 
+        /*
+         * Activate a server configuration
+         */
         activateServer( { commit }, data) {
             commit( 'setServerActivateStatus', 1 );
 
             ServerApi.activateServer(data)
                 .then( (response ) => {
-                    commit( 'setServerConfig', response.data.data.server );
+                    commit( 'setServerConfig', response.data.server );
                     commit( 'setServerActivateStatus', 2 );
                 })
                 .catch( (error) => {
                     commit( 'setServerConfig', {} );
                     commit( 'setServerActivateStatus', 3 );
-                    console.log(error);
+                    console.log(error.toJSON());
                 });
         },
 
+        /*
+         * Delete a server configuration
+         */
         deleteServer( { commit }, data)  {
             commit( 'setServerDeleteStatus', 1 );
 
@@ -127,9 +142,50 @@ export const server = {
                 .catch( (error) => {
                     commit( 'setServerDelete', {} );
                     commit( 'setServerDeleteStatus', 3 );
-                    console.log(error);
+                    console.log(error.toJSON());
                 });
-        }
+        },
+
+        /*
+        *   Loads the server status from the API
+        */
+        getServerStatus( { commit }, database ) {
+            commit( 'setLoadServerStatus', 1 );
+
+            ServerApi.getServerStatus(database)
+                .then( ( response ) => {
+                    commit( 'setServerStatus', response.data.status );
+                    commit( 'setLoadServerStatus', 2 );
+                })
+                .catch( (error) => {
+                    commit( 'setServerStatus', {} );
+                    commit( 'setLoadServerStatus', 3 );
+                    console.log(error.toJSON());
+                });
+        },
+
+        /*
+        *   Loads the server processes from the API
+        */
+        getServerProcesses( { commit } ) {
+            commit( 'setLoadServerProcesses', 1 );
+
+            ServerApi.getServerProcesses()
+                .then( ( response ) => {
+                    if (response.data.processes) {
+                        if (response.data.processes.inprog) {
+                            console.log("inprog:" + response.data.processes.inprog);
+                            commit( 'setServerProcesses', response.data.processes.inprog );
+                        }
+                    }
+                    commit( 'setLoadServerProcesses', 2 );
+                })
+                .catch( (error) => {
+                    commit( 'setServerProcesses', [] );
+                    commit( 'setLoadServerProcesses', 3 );
+                    console.log(error.toJSON());
+                });
+        },
     },
 
     /*
@@ -187,6 +243,21 @@ export const server = {
         },
 
         /*
+        *   Sets the updated server config
+        */
+        setUpdateConfig( state, update ) {
+            let servers = state.servers, arr;
+            servers.forEach((server) => {
+                if (server.id === update.id) {
+                    arr.push(update)
+                } else {
+                    arr.push(server)
+                }
+            })
+            state.servers = arr;
+        },
+
+        /*
         *   Set the server delete status
         */
         setServerDeleteStatus( state, status ) {
@@ -214,6 +285,34 @@ export const server = {
         */
         setDisplayServerStatus( state, status) {
             state.displayServerStatus = status;
+        },
+
+        /*
+        *   Set the load server status
+        */
+        setLoadServerStatus( state, status) {
+            state.loadServerStatus = status;
+        },
+
+        /*
+        *   Set the server status
+        */
+        setServerStatus( state, status) {
+            state.serverStatus = status;
+        },
+
+        /*
+        *   Set the load server processes status
+        */
+        setLoadServerProcesses( state, status) {
+            state.loadServerProcesses = status;
+        },
+
+        /*
+        *   Set the server processes
+        */
+        setServerProcesses( state, processes ) {
+            state.serverProcesses = processes;
         }
     },
 
@@ -284,8 +383,7 @@ export const server = {
         *   Return a server configuration for editing
         */
         getServerConfiguration: ( state ) => (id) => {
-            let server = state.servers.find(server => server.id === id);
-            return server;
+            return state.servers.find(server => server.id === id);
         },
 
         getServerDeleteStatus( state ) {
@@ -321,7 +419,7 @@ export const server = {
         },
 
         /*
-         *  Return the local server infirmation
+         *  Return the local server information
          */
         getWebServer( state ) {
             return state.server.webserver;
@@ -345,15 +443,12 @@ export const server = {
         *   Return the display server
         */
         getDisplayServer: (state) => (id) => {
-            console.log("getDisplayServer: " + id);
             if (state.server && state.server.id !== '') {
-                console.log("server found!!");
                 return state.server;
 
             } else {
                 let server = state.server.find(server => server.id === id);
                 if (server) {
-                    console.log("setting display server state: " + id);
                     // this.store.commit('setDisplayAdStatus', id);
                     // this.store.commit('setDisplayAd', ad);
                     state.displayServerStatus = id;
@@ -361,6 +456,34 @@ export const server = {
                     return server;
                 }
             }
+        },
+
+        /*
+        *   Get the load server's status status
+        */
+        getLoadServerStatus( state ) {
+            return state.loadServerStatus;
+        },
+
+        /*
+        *   Get the server's status
+        */
+        getServerStatus( state ) {
+            return state.serverStatus;
+        },
+
+        /*
+        *   Set the load server processes status
+        */
+        getLoadServerProcesses( state ) {
+            return state.loadServerProcesses;
+        },
+
+        /*
+        *   Get the server processes
+        */
+        getServerProcesses( state ) {
+            return state.serverProcesses;
         }
     }
 };
