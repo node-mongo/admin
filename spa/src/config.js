@@ -49,9 +49,9 @@ switch ( process.env.NODE_ENV )  {
     case 'development':
     case 'dev':
     case 'local':
-        api_url = '//192.168.137.141:8443/api';
-        web_url = '//192.168.137.141:8443/';
-        server  = '//192.168.137.141:8443';
+        api_url = '//192.168.1.141:8443/api';
+        web_url = '//192.168.1.141:8443/';
+        server  = '//192.168.1.141:8443';
         break;
 
     case 'staging':
