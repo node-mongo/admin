@@ -3,6 +3,7 @@ node_modules
 storage/sqlite/db
 storage/sqlite/sessions
 storage/cert/*
+!storage/cert/index.html
 
 # local env files
 src/.env
